@@ -1,5 +1,15 @@
 import './App.css';
-import {AppBar, Card, CardContent, Container, Grid, makeStyles, Typography} from "@material-ui/core";
+import {
+    AppBar, Box,
+    Card,
+    CardContent,
+    Container,
+    FormControl,
+    Grid,
+    InputLabel,
+    makeStyles, MenuItem, Select,
+    Typography
+} from "@material-ui/core";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
@@ -13,6 +23,10 @@ const useStyles = makeStyles((theme) => ({
     },
     control: {
         padding: theme.spacing(2),
+    },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
     },
 }));
 
@@ -35,21 +49,26 @@ const data = [
     }
 ]
 
-const NewsItem = ({title, body}) => {
+const NewsItem = ({title, body, current}) => {
     const classes = useStyles();
+    console.log(title, current)
     return (
-        <Grid item>
+        <>
+        {(current === title) && (
+            <Grid item>
             <Card className={classes.card}>
                 <CardContent>
                     <Typography variant="h5" component="h2">{title}</Typography>
                     <Typography variant="body2" component="p">{body}</Typography>
                 </CardContent>
             </Card>
-        </Grid>
-    );
+        </Grid>)
+        }
+        </>
+    )
 }
 
-function App() {
+function Layout({animal, setAnimal}) {
     const classes = useStyles();
     return (
         <div className="App">
@@ -59,16 +78,43 @@ function App() {
                         News
                     </Typography>
                 </AppBar>
+                <Box className={classes.card}><FormControl className={classes.formControl}>
+                    <InputLabel id="demo-simple-select-label">Жывотное</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={animal}
+                        onChange={(e) => setAnimal(e.target.value)}
+                    >
+                        {data.map((item) => (<MenuItem value={item.title}>{item.title}</MenuItem>))}
+                    </Select>
+                </FormControl>
+                </Box>
                 <Grid container className={classes.root} spacing={2}>
                     <Grid item xs={12}>
                         <Grid container justify="center" spacing={3}>
-                            {data.map((item) => <NewsItem title={item.title} body={item.body} key={item.title}/>)}
+                            {data.map((item) => <NewsItem title={item.title} body={item.body} key={item.title} current={animal}/>)}
                         </Grid>
                     </Grid>
                 </Grid>
             </Container>
         </div>
     );
+}
+
+class App extends React.Component {
+    state = {
+        animal: data[0].title
+    }
+    setAnimal = (animal) => {
+        this.setState({animal});
+    }
+
+    render() {
+        return (
+            <Layout animal={this.state.animal} setAnimal={this.setAnimal}/>
+        );
+    }
 }
 
 export default App;
